@@ -13,14 +13,17 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('farm_name');
             $table->text('description')->nullable();
-            $table->string('location')->nullable()
+            $table->string('location')->nullable();
+            $table->decimal('latitude', 10,7)->nullable();
+            $table->decimal('longitude', 10, 2)->nullable();
+            $table->decimal('farm_size', 10, 2)->nullable();
+            $table->string('farming_method')->nullable();
+            $table->string('cover_image')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+    
     public function down(): void
     {
         Schema::dropIfExists('farms');

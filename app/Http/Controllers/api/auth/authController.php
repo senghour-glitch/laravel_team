@@ -63,7 +63,7 @@ class AuthController extends Controller
         ]);
 
         //find the most recent verification code for this user that matches the code they typed in, but ONLY if the code is still active and hasn't expired yet.
-        $verification = UserVerificationArr::where('user_id', $request->user_id)
+        $verification = UserVerification::where('user_id', $request->user_id)
             ->where('code', $request->code)
             ->where('expires_at', '>=', now())
             ->latest('id')
