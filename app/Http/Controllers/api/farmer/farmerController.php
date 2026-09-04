@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api\Farmer;
  
 use App\Http\Controllers\Controller;
+use App\Models\Crop;
 use App\Models\Farm;
 use App\Models\FieldModel;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\FuncCall;
+use Psy\TabCompletion\Matcher\FunctionsMatcher;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class farmerController extends Controller
@@ -150,7 +152,50 @@ class farmerController extends Controller
 
         if (!empty($data['field_id'])){
             $field = FieldModel::find($data['field_id']);
-            
+            $this->authorizeField($farm, $field);
+        }
+
+        $crop = $farm->crops()->create($data);
+        return response()->json($crop, 201);
+    }
+    public function updateCrop(Request $request, Farm $farm, Crop $crop)
+    {
+        $this->authorizeFarm($request, $farm);
+        $this->authorizeCrop($farm, $crop);
+
+        $data = $request->validate([
+             'field_id' => ['nullable', 'exists:fields,id'],
+            'name' => ['required', 'string'],
+            'variety' => ['nullable', 'string'],
+            'planting_date' => ['nullable','date'],
+            'expected_harvest_date' => ['nullable','date'],
+            'quantity_planted' => ['nullable', 'numeric'],
+            'growth_stage' => ['nullable','string'],
+            'image' => ['nullable', 'string'],
+        ]);
+
+        if(!empty($data['field_id'])){
+            $field = FieldModel::find($data['field_id']);
+            $this->authorizeField($farm, $field);
+        }
+
+        $crop->update($data);
+        return $crop;
+    }
+
+    public function destroyCrop(Request $request, Farm $farm, Crop $crop)
+    {
+        $this->authorizeFarm($request, $farm);
+        $this->authorizeCrop($farm, $crop);
+        $crop->delete();
+
+        return response()->json(null, 204);
+    }
+
+    private function authorizeCrop(Farm $farm, Crop $crop): void
+    {
+        if ($crop->farm_id !== $farm->id){
+            throw new HttpException(404, 'Crop not found on this farm.');
         }
     }
 }

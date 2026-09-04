@@ -11,4 +11,9 @@ Route::prefix('farms/{farm}')->group(function() {
     Route::post('fields', [FarmerController::class, 'storeField']);
     Route::put('fields/{field}', [FarmerController::class, 'updateField']);
     Route::delete('fields/{field}', [FarmerController::class, 'destroyField']);
+
+    Route::get('crops', [FarmerController:;class, 'destroyField']);
+     Route::post('crops', [FarmerController::class, 'storeCrop']);
+    Route::put('crops/{crop}', [FarmerController::class, 'updateCrop']);
+    Route::delete('crops/{crop}', [FarmerController::class, 'destroyCrop']);
 });
