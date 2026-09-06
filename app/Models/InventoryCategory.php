@@ -1,5 +1,3 @@
-
-Inventorycategory · PHP
 <?php
  
 namespace App\Models;
