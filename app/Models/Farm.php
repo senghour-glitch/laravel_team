@@ -38,4 +38,8 @@ class Farm extends Model
     {
         return $this->hasMany(Inventory::class);
     }
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

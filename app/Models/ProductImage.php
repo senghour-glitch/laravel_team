@@ -1,21 +1,24 @@
 <?php
- 
+
 namespace App\Models;
- 
+
 use Illuminate\Database\Eloquent\Model;
- 
-class orderItem extends Model
+
+class ProductImage extends Model
 {
+    public $timestamps = false;
+
     protected $fillable = [
-        'order_id',
         'product_id',
-        'quantity',
-        'price',
+        'image',
+        'is_primary',
     ];
 
-    public function order()
+    protected function casts(): array
     {
-        return $this->belongsTo(Order::class);
+        return [
+            'is_primary' => 'boolean',
+        ];
     }
 
     public function product()

@@ -198,4 +198,44 @@ class farmerController extends Controller
             throw new HttpException(404, 'Crop not found on this farm.');
         }
     }
+    
+    //Watering harvest logs
+
+    public function storeWateringLog(Request $request, Farm $farm, Crop $crop)
+    {
+         $this->authorizeFarm($request, $farm);
+        $this->authorizeCrop($farm, $crop);
+ 
+        $data = $request->validate([
+            'field_id' => ['nullable', 'exists:fields,id'],
+            'date' => ['required', 'date'],
+            'water_amount' => ['nullable', 'numeric'],
+            'notes' => ['nullable', 'string'],
+        ]);
+ 
+        if (! empty($data['field_id'])) {
+            $field = FieldModel::find($data['field_id']);
+            $this->authorizeField($farm, $field);
+        }
+ 
+        $log = $crop->wateringLogs()->create($data);
+ 
+        return response()->json($log, 201);
+    }
+
+    public function storeHarvestLog(Request $request, Farm $farm, Crop $crop){
+        $this->authorizeFarm($request, $farm);
+        $this->authorizeCrop($farm, $crop);
+ 
+        $data = $request->validate([
+            'harvest_date' => ['required', 'date'],
+            'quantity' => ['required', 'numeric'],
+            'quality' => ['nullable', 'string', 'max:100'],
+            'notes' => ['nullable', 'string'],
+        ]);
+ 
+        $log = $crop->harvestLogs()->create($data);
+ 
+        return response()->json($log, 201);
+    }
 }

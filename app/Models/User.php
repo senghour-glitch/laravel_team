@@ -52,4 +52,32 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserSession::class);
     }
+    public function farms()
+    {
+        return $this->hasMany(Farm::class);
+    }
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+    public function farmFavorites()
+    {
+        return $this->hasMany(farmFavorites::class);
+    }
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
 }
