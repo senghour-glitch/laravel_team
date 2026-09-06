@@ -8,20 +8,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('farms', function (Blueprint $table) {
+        Schema::create('fields', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('farm_name');
+            $table->foreignId('farm_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->decimal('area',10,2)->nullable();
+            $table->string('soil_type', 100)->nullable();
             $table->text('description')->nullable();
-            $table->string('location')->nullable()
             $table->timestamps();
-            
         });
     }
 
-    
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('farms');
+        Schema::dropIfExists('fields');
     }
 };
