@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('farm_name');
             $table->text('description')->nullable();
-            $table->string('location')->nullable()
+            $table->string('location')->nullable();
             $table->timestamps();
             
         });
