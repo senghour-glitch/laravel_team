@@ -14,6 +14,8 @@ return new class extends Migration
             $table->string('farm_name');
             $table->text('description')->nullable();
             $table->string('location')->nullable();
+            $table->decimal('farm_size', 8, 2)->nullable();
+            $table->string('farming_method')->nullable();
             $table->timestamps();
             
         });
