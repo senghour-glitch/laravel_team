@@ -14,7 +14,12 @@ class CartController extends Controller
     {
         $cart = $this->getOrCreateCart($request);
 
-        return $cart->load('items.product.farm');
+        $cart->load('items.product.farm');
+
+        return response()->json([
+            'message' => 'Cart retrieved succesfully.',
+            'cart' => $cart,
+        ], 200);
     }
 
     public function addItem(Request $request)
@@ -22,27 +27,35 @@ class CartController extends Controller
         $cart = $this->getOrCreateCart($request);
 
         $data = $request->validate([
-            'product_id' => ['required', 'exists:products,id'],
+            'product_id' => ['required','integer', 'exists:products,id'],
             'quantity' => ['required', 'numeric', 'min:0.01'],
         ]);
 
         $product = Product::findOrFail($data['product_id']);
 
         if (! $product->is_active) {
-            throw new HttpException(422, 'This product is not currently available.');
+            return response()->json([
+            'message' => 'This product is not currently available.'
+        ], 422);
         }
 
         $existing = $cart->items()->where('product_id', $product->id)->first();
         $newQuantity = $existing ? $existing->quantity + $data['quantity'] : $data['quantity'];
 
         if ($newQuantity > $product->quantity_available) {
-            throw new HttpException(422, 'Not enough stock available for that quantity.');
+             return response()->json([
+            'message' => 'Not enough stock available.',
+            'available' => $product->quantity_available,
+            'requested' => $newQuantity,
+        ], 422);
         }
 
+        // Update existing cart item
         if ($existing) {
             $existing->update(['quantity' => $newQuantity, 'price' => $product->price]);
             $item = $existing;
         } else {
+            // Create new cart item
             $item = $cart->items()->create([
                 'product_id' => $product->id,
                 'quantity' => $data['quantity'],
@@ -50,7 +63,10 @@ class CartController extends Controller
             ]);
         }
 
-        return response()->json($item->load('product'), 201);
+        return response()->json([
+        'message' => 'Product added to cart successfully.',
+        'item' => $item->load('product'),
+    ], 201);
     }
 
     public function updateItem(Request $request, CartItem $item)

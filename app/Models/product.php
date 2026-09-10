@@ -26,7 +26,7 @@ class Product extends Model
             'is_active' => 'boolean',
         ];
     }
- 
+
     public function farm()
     {
         return $this->belongsTo(Farm::class);

@@ -8,7 +8,7 @@ Route::post('categories', [ProductController::class, 'storeCategory']);
 
 Route::prefix('farms/{farm}/products')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
-    Route::post('/', [ProductController::class, 'store']);
+    Route::post('/products', [ProductController::class, 'store']);
     Route::get('{product}', [ProductController::class, 'show']);
     Route::put('{product}', [ProductController::class, 'update']);
     Route::delete('{product}', [ProductController::class, 'destroy']);

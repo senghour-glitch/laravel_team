@@ -43,23 +43,40 @@ class ProductController extends Controller
 
     public function store(Request $request, Farm $farm)
     {
-        $this->authorizeFarm($request, $farm);
-
-        $data = $request->validate([
-            'category_id' => ['required', 'exists:categories,id'],
+        //validate data sent by farmer
+        $validated = $request->validate([
+            'farm_id' => ['required', 'interger', 'exists:farms,id'],
+            'category_id' => ['required', 'interger', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'unit' => ['required', 'string', 'max:30'],
-            'quantity_available' => ['required', 'numeric', 'min:0'],
-            'harvest_date' => ['nullable', 'date'],
-            'farming_method' => ['nullable', 'string', 'max:100'],
-            'is_active' => ['sometimes', 'boolean'],
+            'price' => ['required', 'numeric', 'gt:0'],
+            'quantity_available' => ['required', 'integer', 'min:0'],
         ]);
 
-        $product = $farm->products()->create($data);
+        $farmer = $request->user();
 
-        return response()->json($product, 201);
+        $farm = Farm::where('id', $validated['farm_id'])->where('user_id', $farmer->id)->first();
+
+        if (!$farm) {
+            return response()->json([
+                'message' => 'You do not own this farm.'
+            ], 403);
+        }
+
+        $product = Product::create([
+            'farm_id' => $farm->id,
+            'category_id' => $validated['category_id'],
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+            'price' => $validated['price'],
+            'quantity_available' => $validated['quantity_available'],
+            'is_active' => true,
+        ]);
+
+        return response()->json([
+            'message' => 'Product created successfully.',
+            'product' => $product,
+        ], 201);
     }
 
     public function show(Request $request, Farm $farm, Product $product)

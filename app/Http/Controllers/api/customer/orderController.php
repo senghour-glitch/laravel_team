@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -45,12 +46,46 @@ class OrderController extends Controller
 
             // Re-check stock for every item before committing to the order.
             foreach ($cart->items as $cartItem) {
-                if ($cartItem->quantity > $cartItem->product->quantity_available) {
-                    throw new HttpException(422, "Not enough stock for {$cartItem->product->name}.");
+
+                $product = Product::where('id', $cartItem->product_id)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $product) {
+                    throw new HttpException(
+                        422,
+                        'One of the products in your cart no longer exists.'
+                    );
                 }
+
+                // Product is no longer available
+                if (!$product->is_active) {
+                    throw new HttpException(
+                        422,
+                        "{$product->name} is no longer available"
+                    );
+                }
+
+                if ($cartItem->quantity > $product->quantity_available) {
+                    throw new HttpException(
+                        422,
+                        "Not enough stock for {$product->name}."
+                    );
+                }
+                $cartItem->setRelation('product', $product);
             }
 
-            $totalAmount = $cart->items->sum(fn ($item) => $item->price * $item->quantity);
+            // Get the latest product prices.
+            foreach ($cart->items as $cartItem) {
+                $cartItem->update([
+                    'price' => $cartItem->product->price,
+                ]);
+            }
+            
+            // Calculate total
+            $totalAmount = $cart->items->sum(
+                fn($item) => $item->price * $item->quantity
+            );
 
             $order = $request->user()->orders()->create([
                 ...$data,
