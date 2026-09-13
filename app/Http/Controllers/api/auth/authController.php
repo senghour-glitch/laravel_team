@@ -22,8 +22,6 @@ class AuthController extends Controller
             'email' => ['required_without:phone', 'nullable', 'email', 'unique:users,email'],
             'phone' => ['required_without:email', 'nullable', 'string', 'max:30', 'unique:users,phone'],
             'password' => ['required', 'string', 'min:8'],
-            'role' => ['required', Rule::enum(UserRole::class)],
-            'location' => ['nullable', 'string', 'max:255'],
         ]);
 
         if ($validator->fails()) {
@@ -35,8 +33,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'location' => $request->location,
+            
         ]);
 
         // Create a new verification code in the database for this user. Check if we are verifying their email or phone. Generate a random 6-digit code, and set it to expire in 15 minutes.

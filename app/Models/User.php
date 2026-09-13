@@ -13,13 +13,19 @@ class User extends Authenticatable
     use HasApiTokens,HasFactory, Notifiable;
     protected $fillable = [
         'name',
+        'display_name',
+        'bio',
         'email',
         'phone',
+        'firebase_uid',
         'password',
         'role',
         'profile_image',
         'location',
-        'firebase_uid',
+        'latitude',
+        'longitude',
+        'gender',
+        'date_of_birth',
     ];
 
     protected $hidden = [
@@ -34,6 +40,7 @@ class User extends Authenticatable
             'phone_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
+            'date_of_birth' => 'date',
         ];
     }
     public function isCustomer(): bool

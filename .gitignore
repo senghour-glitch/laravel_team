@@ -1,4 +1,6 @@
 *.log
+npm-debug.log
+yarn-error.log
 .DS_Store
 .env
 .env.backup
@@ -7,6 +9,7 @@
 .phpunit.result.cache
 /.codex
 /.cursor/
+/.fleet
 /.idea
 /.nova
 /.phpunit.cache
@@ -25,3 +28,7 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Firebase Credentials Secrets
+firebase-credentials.json
+/storage/app/*.json
