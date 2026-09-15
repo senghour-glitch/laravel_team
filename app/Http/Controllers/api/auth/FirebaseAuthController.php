@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Faker\Factory as FakerFactory;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Auth as FirebaseAuth;
-use Kreait\Firebase\Exception\Auth\FailedToVerifyToken;
 use Kreait\Firebase\Factory;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -29,7 +29,7 @@ class FirebaseAuthController extends Controller
      * whether to route into choose-role/profile-setup/location-setup
      * or straight into the app.
      */
-    public function verifyToken(Request $request)
+    public function decodeIdToken(Request $request)
     {
         $request->validate(['id_token' => ['required', 'string']]);
 
