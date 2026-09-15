@@ -33,7 +33,7 @@ class FirebaseAuthController extends Controller
     {
         $request->validate(['id_token' => ['required', 'string']]);
 
-        $claims = $this->verifyToken($request->id_token)->claims();
+        $claims = $this->decodeIdToken($request->id_token)->claims();
         $firebaseUid = $claims->get('sub');
         $email = $claims->get('email');
         $name = $claims->get('name');
@@ -70,7 +70,7 @@ class FirebaseAuthController extends Controller
         ]);
     }
 
-    private function verifyToken(string $idToken)
+    private function decodeIdToken(string $idToken)
     {
         try {
             return $this->firebaseAuth->verifyIdToken($idToken);
